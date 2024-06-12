@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Mockups</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .mockup-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        #mockup {
+            width: 300px;
+        }
+
+        #overlay {
+            position: absolute;
+            top: 50px; /* Ajuste conforme necessário */
+            left: 75px; /* Ajuste conforme necessário */
+            width: 150px; /* Ajuste conforme necessário */
+            display: none; /* Inicialmente oculto */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de Mockups de Camisetas</h1>
+        <div class="mockup-container">
+            <img id="mockup" src="camiseta_base.png" alt="Mockup de Camiseta">
+            <img id="overlay" alt="Imagem do Usuário">
+        </div>
+        <input type="file" id="imageUpload" accept="image/png">
+    </div>
+    <script>
+        document.getElementById('imageUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file && file.type === 'image/png') {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const overlayImage = document.getElementById('overlay');
+                    overlayImage.src = e.target.result;
+                    overlayImage.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                alert('Por favor, envie uma imagem PNG.');
+            }
+        });
+    </script>
+</body>
+</html>

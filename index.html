@@ -8,58 +8,109 @@
         body {
             font-family: Arial, sans-serif;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
+            padding: 20px;
         }
 
         .container {
             text-align: center;
+            max-width: 100%;
         }
 
         .mockup-container {
             position: relative;
             display: inline-block;
+            max-width: 100%;
         }
 
         #mockup {
-            width: 300px;
+            width: 100%;
+            max-width: 300px;
         }
 
         #overlay {
             position: absolute;
-            top: 50px; /* Ajuste conforme necessário */
-            left: 75px; /* Ajuste conforme necessário */
-            width: 150px; /* Ajuste conforme necessário */
-            display: none; /* Inicialmente oculto */
+            display: none;
+        }
+
+        .controls {
+            margin-top: 20px;
+        }
+
+        .controls input[type=range] {
+            width: 100%;
+            max-width: 300px;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Gerador de Mockups de Camisetas</h1>
-        <div class="mockup-container">
+        <div class="mockup-container" id="mockup-container">
             <img id="mockup" src="camiseta_base.png" alt="Mockup de Camiseta">
             <img id="overlay" alt="Imagem do Usuário">
         </div>
-        <input type="file" id="imageUpload" accept="image/png">
+        <input type="file" id="imageUpload" accept="image/png, image/jpeg, image/jpg, image/gif">
+        <div class="controls">
+            <label for="topRange">Posição Vertical:</label>
+            <input type="range" id="topRange" min="0" max="300" value="50">
+            <label for="leftRange">Posição Horizontal:</label>
+            <input type="range" id="leftRange" min="0" max="300" value="75">
+            <label for="sizeRange">Tamanho:</label>
+            <input type="range" id="sizeRange" min="50" max="300" value="150">
+        </div>
+        <button id="saveButton">Salvar Mockup</button>
     </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
+        const overlayImage = document.getElementById('overlay');
+        const topRange = document.getElementById('topRange');
+        const leftRange = document.getElementById('leftRange');
+        const sizeRange = document.getElementById('sizeRange');
+        const saveButton = document.getElementById('saveButton');
+        const mockupContainer = document.getElementById('mockup-container');
+
         document.getElementById('imageUpload').addEventListener('change', function(event) {
             const file = event.target.files[0];
-            if (file && file.type === 'image/png') {
+            if (file && (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'image/gif')) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    const overlayImage = document.getElementById('overlay');
                     overlayImage.src = e.target.result;
                     overlayImage.style.display = 'block';
+                    updateOverlay();
                 }
                 reader.readAsDataURL(file);
             } else {
-                alert('Por favor, envie uma imagem PNG.');
+                alert('Por favor, envie uma imagem PNG, JPEG, JPG, ou GIF.');
             }
+        });
+
+        function updateOverlay() {
+            overlayImage.style.top = `${topRange.value}px`;
+            overlayImage.style.left = `${leftRange.value}px`;
+            overlayImage.style.width = `${sizeRange.value}px`;
+        }
+
+        topRange.addEventListener('input', updateOverlay);
+        leftRange.addEventListener('input', updateOverlay);
+        sizeRange.addEventListener('input', updateOverlay);
+
+        saveButton.addEventListener('click', function() {
+            html2canvas(mockupContainer).then(canvas => {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'mockup.png';
+
+                // Append the link to the body temporarily and simulate a click to download the image
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
         });
     </script>
 </body>
